@@ -1,4 +1,39 @@
+\documentclass[a4,10pt]{article}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=red]{hyperref}
+\usepackage{multirow}
+\usepackage[utf8]{inputenc}
+\usepackage[left= 1cm, right=1cm, top=2cm, bottom=1cm, textwidth=12cm]{geometry}
+\usepackage{graphicx}
+\usepackage{braket}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+\linespread{1.25}
+\usepackage{wrapfig}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,chains,positioning,shapes.geometric}
+
+
+\title{Deep Learning Report}
+\date{}
+
+\begin{document}
+
+Question 1
+
 Cross Entropy is typically preferred for logistic regression because it is specifically designed for classification tasks,
 providing a clear and interpretable measure of error. It encourages the model to output probabilities that match the true
 labels, making it suitable for logistic regression where the goal is to predict binary outcomes.
 Additionally, Cross Entropy ensures a single best answer by penalizing deviations from the correct class probabilities.
+
+
+\end{document}
