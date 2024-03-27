@@ -1,0 +1,31 @@
+Model Architecture:
+
+We implemented a feedforward neural network with dense layers using PyTorch. The model consists of an input layer, two hidden layers, and an output layer. The number of neurons in the hidden layers is 
+128 and 64 respectively. ReLU activation function is used for the hidden layers, and no activation function is applied to the output layer as it's a classification problem where we are using Cross Entropy Loss.
+
+2. Preprocessing:
+
+For preprocessing, we applied two transformations to the input images: ToTensor() and Normalize(). ToTensor() converts the images into tensors, and Normalize() normalizes the pixel values to have a
+mean of 0.5 and a standard deviation of 0.5. Normalization helps in faster convergence during training.
+
+3. Hyperparameter Tuning:
+
+Hyperparameters such as learning rate, batch size, and number of epochs were chosen empirically. We used Adam optimizer with a learning rate of 0.001. The batch size was set to 100, and the 
+number of epochs was set to 5. These values can be further optimized using techniques like grid search, random search, or Bayesian optimization.
+
+4. Training:
+
+During training, we iterated over the dataset for a certain number of epochs. In each epoch, we fed the batches of preprocessed images to the model, calculated the loss using Cross Entropy Loss, 
+performed backpropagation, and updated the weights using the Adam optimizer.
+
+5. Testing:
+
+After training, we evaluated the model on the test dataset. We calculated the accuracy of the model on the test images to evaluate its performance.
+
+In conclusion, we successfully implemented a feedforward neural network using PyTorch for the MNIST dataset, achieving a certain level of accuracy on the test set. The model's performance can be further 
+improved by fine-tuning hyperparameters and experimenting with different architectures.
+
+
+
+
+
