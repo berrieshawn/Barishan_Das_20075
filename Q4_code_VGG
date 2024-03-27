@@ -1,0 +1,83 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision.transforms as transforms
+import torchvision.models as models
+from torchvision.datasets import SVHN
+from torch.utils.data import DataLoader, Subset
+from sklearn.metrics import accuracy_score
+
+# Constants
+num_classes = 10
+batch_size = 64
+subset_fraction = 0.25  # Fraction of the dataset to use due to compute limitations
+
+# Check if CUDA (GPU) is available, otherwise use CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Define transformations
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),  # Resize input images to meet VGG's requirement
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Normalize images
+])
+
+# Load SVHN dataset
+train_dataset = SVHN(root='./data', split='train', transform=transform, download=True)
+test_dataset = SVHN(root='./data', split='test', transform=transform, download=True)
+
+# Create subset of dataset
+train_size = int(subset_fraction * len(train_dataset))
+test_size = int(subset_fraction * len(test_dataset))
+train_subset = Subset(train_dataset, torch.randperm(len(train_dataset))[:train_size])
+test_subset = Subset(test_dataset, torch.randperm(len(test_dataset))[:test_size])
+
+# Create data loaders
+train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(test_subset, batch_size=batch_size, shuffle=False)
+
+def train_and_evaluate_model(model, criterion, optimizer, num_epochs=5):
+    model.to(device)
+    for epoch in range(num_epochs):
+        model.train()
+        running_loss = 0.0
+        for images, labels in train_loader:
+            images, labels = images.to(device), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item() * images.size(0)
+
+        # Calculate training loss
+        epoch_loss = running_loss / len(train_subset)
+
+        # Evaluate on test set
+        model.eval()
+        predictions = []
+        ground_truth = []
+        with torch.no_grad():
+            for images, labels in test_loader:
+                images, labels = images.to(device), labels.to(device)
+                outputs = model(images)
+                _, predicted = torch.max(outputs, 1)
+                predictions.extend(predicted.cpu().numpy())
+                ground_truth.extend(labels.cpu().numpy())
+
+        # Calculate accuracy
+        accuracy = accuracy_score(ground_truth, predictions)
+
+        # Print progress
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}, Accuracy: {accuracy:.4f}')
+
+# Initialize VGG model
+vgg_model = models.vgg16(pretrained=True)
+num_ftrs = vgg_model.classifier[6].in_features
+vgg_model.classifier[6] = nn.Linear(num_ftrs, num_classes)
+
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(vgg_model.parameters(), lr=0.001)
+
+print("Training VGG model:")
+train_and_evaluate_model(vgg_model, criterion, optimizer)
